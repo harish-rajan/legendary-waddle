@@ -1,0 +1,90 @@
+{% extends "view.html" %}
+{% block content %}
+<div>
+    <div class="container">
+        <h1>{{ flightID }}</h1>
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Airline</th>
+                    <th scope="col">Flight Number</th>
+                    <th scope="col">Aircraft Tail Number</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Route</th>
+                    <th scope="col">Progress</th>
+                    <th scope="col">Departure Airport</th>
+                    <th scope="col">Arrival Airport</th>
+                    <th scope="col">Next Takeoff/Landing</th>
+                    <th scope="col">Cost</th>
+                </tr>
+            </thead>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item['support_airline'] }}</td>
+                    <td>{{ item['flightID'] }}</td>
+                    <td>{{ item['support_tail'] }}</td>
+                    <td>{{ item['airplane_status'] }}</td>
+                    <td>{{ item['routeID'] }}</td>
+                    <td>{{ item['progress'] }}</td>
+                    <td>{{ item['departure'] }}</td>
+                    <td>{{ item['arrival'] }}</td>
+                    <td>{{ item['next_time'] }}</td>
+                    <td>{{ item['cost'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container text-center">
+        {% for item in items %}
+        {% if item['airplane_status'] == 'on_ground' %}
+        <a class="btn btn-primary" href="/flights/{{ item['flightID'] }}/disembark">Disembark</a>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignPilot">Assign Pilot</button>
+        <a class="btn btn-primary" href="/flights/{{ item['flightID'] }}/board">Board</a>
+        <a class="btn btn-primary" href="/flights/{{ item['flightID'] }}/takeoff">Takeoff</a>
+        <a class="btn btn-primary" href="/flights/{{ item['flightID'] }}/recycleCrew">Recycle Crew</a>
+        <a class="btn btn-primary" href="/flights/{{ item['flightID'] }}/retireFlight">Retire Flight</a>
+        {% else %}
+        <a class="btn btn-primary" href="/flights/{{ item['flightID'] }}/landing">Land</a>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="assignPilot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignPilotLabel">Assign Pilot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="assignPilotForm" action="/flights/{{ flightID }}/assignPilotReq" method="get">
+                    <label for="inputAssignPilot" class="form-label">AssignPilot</label>
+                    <select class="form-select" id="inputAssignPilot" value="" name="personID">
+                        <option hidden disabled selected value></option>
+                        {% for pilot in pilots %}
+                        <option value="{{ pilot['personID'] }}">{{ pilot['name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="assignPilot()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function assignPilot() {
+        document.getElementById('assignPilotForm').submit();
+    }
+</script>
+{% endblock %}

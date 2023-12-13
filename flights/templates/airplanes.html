@@ -1,0 +1,129 @@
+{% extends "view.html" %}
+{% block content %}
+<div>
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col">
+                <h1>Airplanes</h1>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAirplane">Add Airplane</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Airline</th>
+                    <th scope="col">Tail Number</th>
+                    <th scope="col">Seat Capacity</th>
+                    <th scope="col">Speed</th>
+                    <th scope="col">Location ID</th>
+                    <th scope="col">Plane Type</th>
+                    <th scope="col">Skids</th>
+                    <th scope="col">Propellers</th>
+                    <th scope="col">Jet Engines</th>
+                </tr>
+            </thead>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    {% for col in cols %}
+                    <td>{{ item[col] }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+    
+<!-- Modal -->
+<div class="modal" id="addAirplane" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAirplaneLabel">Add Airplane</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="addAirplaneForm" action="/addairplaneReq" method="get">
+                    <div class="col-4">
+                        <label for="inputAirline" class="form-label">Airline</label>
+                        <select class="form-select" id="inputAirline" value="" name="airlineID">
+                            <option hidden disabled selected value></option>
+                            {% for airline in airlines %}
+                            <option value="{{ airline['airlineID'] }}">{{ airline['airlineID'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="inputTailNum"  class="form-label">Tail Number</label>
+                        <input class="form-control" type="text" id="inputTailNum" name="tail_num">
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label" for="inputLocationID">Location ID</label>
+                        <input class="form-control" type="text" id="inputLocationID" name="locationID">
+                    </div>
+                    <div class="col-6">
+                        <label for="inputSeatCap" class="form-label">Seat Capacity</label>
+                        <input class="form-control" type="number" id="inputSeatCap" name="seat_capacity">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label" for="inputSpeed">Speed</label>
+                        <input class="form-control" type="number" id="inputSpeed" name="speed">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="inputPlaneType">Plane Type</label>
+                        <select class="form-select" id="inputPlaneType" value="" onchange="selectType()" name="plane_type">
+                            <option hidden disabled selected value></option>
+                            <option value="prop">Propeller</option>
+                            <option value="jet">Jet</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label" for="inputPropellers">Propellers</label>
+                        <input class="form-control" type="number" id="inputPropellers" disabled name="propellers">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="inputSkids" disabled name="skids">
+                            <label class="form-check-label" for="inputSkids">Skids</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label" for="inputJetEngines">Jet Engines</label>
+                        <input class="form-control" type="number" id="inputJetEngines" disabled name="jet_engines">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addAirplane()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectType() {
+    if (document.getElementById('inputPlaneType').value == 'prop') {
+        document.getElementById('inputJetEngines').value = "";
+        document.getElementById('inputJetEngines').disabled = true;
+        document.getElementById('inputPropellers').disabled = false;
+        document.getElementById('inputSkids').disabled = false;
+
+    } else if (document.getElementById("inputPlaneType").value == 'jet') {
+        document.getElementById('inputPropellers').value = "";
+        document.getElementById('inputSkids').value = "";
+        document.getElementById('inputPropellers').disabled = true;
+        document.getElementById('inputSkids').disabled = true;
+        document.getElementById('inputJetEngines').disabled = false;
+    }
+}
+
+function addAirplane() {
+    document.getElementById('addAirplaneForm').submit();
+}
+</script>
+{% endblock %}
