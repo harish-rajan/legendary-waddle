@@ -1,0 +1,196 @@
+{% extends "view.html" %}
+{% block content %}
+<div>
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col">
+                <h1>Views</h1>
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-primary" href="/simulationCycle">Run 1 Simulation Cycle</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div>
+            <label for="viewSelector" class="form-label">Select View to Display</label>
+            <select class="form-select" id="viewSelector" onchange="changeView()">
+                <option hidden disabled selected value></option>
+                <option value="flightsInAir">Flights in the Air</option>
+                <option value="flightsOnGround">Flights on the Ground</option>
+                <option value="peopleInAir">People in the Air</option>
+                <option value="peopleOnGround">People on the Ground</option>
+                <option value="routeSummary">Route Summary</option>
+                <option value="alternativeAirports">Alternative Airports</option>
+            </select>
+        </div>
+        <div id="flightsInAir" hidden>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Departing From</th>
+                        <th scope="col">Arriving At</th>
+                        <th scope="col">Number of Flights</th>
+                        <th scope="col">Flight List</th>
+                        <th scope="col">Earliest Arrival</th>
+                        <th scope="col">Latest Arrival</th>
+                        <th scope="col">Airplane List</th>
+                    </tr>
+                </thead>
+                </thead>
+                <tbody>
+                    {% for item in flightsInAir %}
+                    <tr>
+                        {% for col in flightsInAirCols %}
+                        <td>{{ item[col] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="flightsOnGround" hidden>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Departing From</th>
+                        <th scope="col">Number of Flights</th>
+                        <th scope="col">Flight List</th>
+                        <th scope="col">Earliest Arrival</th>
+                        <th scope="col">Lastest Arrival</th>
+                        <th scope="col">Airplane List</th>
+                    </tr>
+                </thead>
+                </thead>
+                <tbody>
+                    {% for item in flightsOnGround %}
+                    <tr>
+                        {% for col in flightsOnGroundCols %}
+                        <td>{{ item[col] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="peopleInAir" hidden>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Departing From</th>
+                        <th scope="col">Arriving At</th>
+                        <th scope="col">Number of Airplanes</th>
+                        <th scope="col">Airplane List</th>
+                        <th scope="col">Flight List</th>
+                        <th scope="col">Earliest Arrival</th>
+                        <th scope="col">Latest Arrival</th>
+                        <th scope="col">Number of Pilots</th>
+                        <th scope="col">Number of Passengers</th>
+                        <th scope="col">Joint Pilots Passengers</th>
+                        <th scope="col">Person List</th>
+                    </tr>
+                </thead>
+                </thead>
+                <tbody>
+                    {% for item in peopleInAir %}
+                    <tr>
+                        {% for col in peopleInAirCols %}
+                        <td>{{ item[col] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="peopleOnGround" hidden>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Departing From</th>
+                        <th scope="col">Airport</th>
+                        <th scope="col">Airport Name</th>
+                        <th scope="col">City</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Number of Pilots</th>
+                        <th scope="col">Number of Passengers</th>
+                        <th scope="col">Joint Pilot Passengers</th>
+                        <th scope="col">Person List</th>
+                    </tr>
+                </thead>
+                </thead>
+                <tbody>
+                    {% for item in peopleOnGround %}
+                    <tr>
+                        {% for col in peopleOnGroundCols %}
+                        <td>{{ item[col] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="routeSummary" hidden>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Route</th>
+                        <th scope="col">Number of Legs</th>
+                        <th scope="col">Leg Sequence</th>
+                        <th scope="col">Route Length</th>
+                        <th scope="col">Number of Flights</th>
+                        <th scope="col">Flight List</th>
+                        <th scope="col">Airport Sequence</th>
+                    </tr>
+                </thead>
+                </thead>
+                <tbody>
+                    {% for item in routeSummary %}
+                    <tr>
+                        {% for col in routeSummaryCols %}
+                        <td>{{ item[col] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="alternativeAirports" hidden>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">City</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Number of Airports</th>
+                        <th scope="col">Airport Code List</th>
+                        <th scope="col">Airport Name List</th>
+                    </tr>
+                </thead>
+                </thead>
+                <tbody>
+                    {% for item in alternativeAirport %}
+                    <tr>
+                        {% for col in alternativeAirportCols %}
+                        <td>{{ item[col] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeView() {
+        document.getElementById("flightsInAir").hidden = true;
+        document.getElementById("flightsOnGround").hidden = true;
+        document.getElementById("peopleInAir").hidden = true;
+        document.getElementById("peopleOnGround").hidden = true;
+        document.getElementById("routeSummary").hidden = true;
+        document.getElementById("alternativeAirports").hidden = true;
+        document.getElementById(document.getElementById("viewSelector").value).hidden = false
+    }
+</script>
+{% endblock %}

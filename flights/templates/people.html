@@ -1,0 +1,131 @@
+{% extends "view.html" %}
+{% block content %}
+<div>
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col">
+                <h1>People</h1>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPerson">Add Person</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Person ID</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Location ID</th>
+                    <th scope="col">Location Name</th>
+                </tr>
+            </thead>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    {% for col in cols %}
+                    <td>{{ item[col] }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+    
+<!-- Modal -->
+<div class="modal" id="addPerson" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPersonLabel">Add Person</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="addPersonForm" action="/addPersonReq" method="get">
+                    <div class="col-2">
+                        <label for="inputPersonID"  class="form-label">Person ID</label>
+                        <input class="form-control" type="text" id="inputPersonID" name="personID">
+                    </div>
+                    <div class="col-5">
+                        <label class="form-label" for="inputFirstName">First Name</label>
+                        <input class="form-control" type="text" id="inputFirstName" name="first_name">
+                    </div>
+                    <div class="col-5">
+                        <label for="inputLastName" class="form-label">Last Name</label>
+                        <input class="form-control" type="text" id="inputLastName" name="last_name">
+                    </div>
+                    <div class="col-12">
+                        <label for="inputLocationID" class="form-label">LocationID</label>
+                        <select class="form-select" id="inputLocationID" value="" name="locationID">
+                            <option hidden disabled selected value></option>
+                            {% for location in locations %}
+                            <option value="{{ location['locationID'] }}">{{ location['locationID'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12" onclick="selectRole()">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="personRole" id="passenger" name="passengerRole">
+                            <label class="form-check-label" for="passenger">Passenger</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="personRole" id="pilot" name="pilotRole">
+                            <label class="form-check-label" for="pilot">Pilot</label>
+                        </div>
+                    </div>
+                    <div class="row" id="pilotInfo" hidden>
+                        <div class="col-6">
+                            <label class="form-label" for="inputTaxID">Tax ID</label>
+                            <input class="form-control" type="text" id="inputTaxID" name="taxID">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label" for="inputExperience">Experience</label>
+                            <input class="form-control" type="number" id="inputExperience" name="experience">
+                        </div>
+                    </div>
+                    <div class="row" id="passengerInfo" hidden>
+                        <div class="col-6">
+                            <label class="form-label" for="inputMiles">Miles</label>
+                            <input class="form-control" type="number" id="inputMiles" name="miles">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label" for="inputFunds">Funds</label>
+                            <input class="form-control" type="number" id="inputFunds" name="funds">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addPerson()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectRole() {
+    if (document.getElementById("pilot").checked) {
+        document.getElementById("inputMiles").value = "";
+        document.getElementById("inputFunds").value = "";
+        document.getElementById("passengerInfo").hidden = true;
+        document.getElementById("pilotInfo").hidden = false;
+    }
+    if (document.getElementById("passenger").checked) {
+        document.getElementById("inputTaxID").value = "";
+        document.getElementById("inputExperience").value = "";
+        document.getElementById("pilotInfo").hidden = true;
+        document.getElementById("passengerInfo").hidden = false;
+    }
+}
+
+function addPerson() {
+    document.getElementById('addPersonForm').submit();
+}
+</script>
+{% endblock %}

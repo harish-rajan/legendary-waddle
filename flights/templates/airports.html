@@ -1,0 +1,89 @@
+{% extends "view.html" %}
+{% block content %}
+<div>
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col">
+                <h1>Airports</h1>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAirport">Add Airport</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">ICAO</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">City</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Location ID</th>
+                </tr>
+            </thead>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    {% for col in cols %}
+                    <td>{{ item[col] }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+    
+<!-- Modal -->
+<div class="modal" id="addAirport" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAirportLabel">Add Airport</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="addAirportForm" action="/addAirportReq" method="get">
+                    <div class="col-2">
+                        <label for="inputAirportID"  class="form-label">ICAO</label>
+                        <input class="form-control" type="text" id="inputAirportID" name="airportID">
+                    </div>
+                    <div class="col-5">
+                        <label for="inputAirportName" class="form-label">Name</label>
+                        <input class="form-control" type="text" id="inputAirportName" name="airport_name">
+                    </div>
+                    <div class="col-5">
+                        <label class="form-label" for="inputLocationID">Location ID</label>
+                        <input class="form-control" type="text" id="inputLocationID" name="locationID">
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label" for="inputCity">City</label>
+                        <input class="form-control" type="text" id="inputCity" name="city">
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label" for="inputState">State</label>
+                        <input class="form-control" type="text" id="inputState" name="state">
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label" for="inputCountry">Country</label>
+                        <input class="form-control" type="text" id="inputCountry" name="country">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addAirport()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addAirport() {
+        document.getElementById('addAirportForm').submit();
+    }
+</script>
+{% endblock %}
