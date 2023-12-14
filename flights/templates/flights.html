@@ -9,6 +9,12 @@
             <div class="col-auto">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#offerFlight">Offer Flight</button>
             </div>
+             <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateFlight">Update Flight</button>
+            </div>
+             <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteFlight">Delete Flight</button>
+            </div>
         </div>
     </div>
     <div class="container">
@@ -127,9 +133,102 @@
     </div>
 </div>
 
+<div class="modal" id="updateFlight" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updatelightLabel">Update Flight</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="updateFlightForm" action="/updateFlightReq" method="get">
+                    <div class="col-4">
+                        <label for="updateAirline" class="form-label">Airline</label>
+                        <select class="form-select" id="updateAirline" value="" name="support_airline">
+                            <option hidden disabled selected value></option>
+                            {% for airline in airlines %}
+                            <option value="{{ airline['airlineID'] }}">{{ airline['airlineID'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="updateRoute" class="form-label">Route</label>
+                        <select class="form-select" id="updateRoute" value="" name="routeID">
+                            <option hidden disabled selected value></option>
+                            {% for route in routes %}
+                            <option value="{{ route['routeID'] }}">{{ route['routeID'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="updateFlights"  class="form-label">Flight Number</label>
+                        <input class="form-control" type="text" id="updateFlights" name="flightID">
+                    </div>
+                    <div class="col-4">
+                        <label for="updateTailNum" class="form-label">Aircraft Tail Number</label>
+                        <select class="form-select" id="updateTailNum" value="" name="support_tail">
+                            <option hidden disabled selected value></option>
+                            {% for airplane in airplanes %}
+                            <option value="{{ airplane['tail_num'] }}">{{ airplane['tail_num'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <label for="updateProgress" class="form-label">Progress</label>
+                        <input class="form-control" type="number" id="updateProgress" name="progress">
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label" for="updateNextTime">Takeoff Time</label>
+                        <input class="form-control" type="time" id="updateNextTime" name="next_time">
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label" for="updateCost">Cost</label>
+                        <input class="form-control" type="number" id="updateCost" name="cost">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateFlight()">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="deleteFlight" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteFlightLabel">Delete Flight</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="deleteFlightForm" action="/deleteFlightReq" method="get">
+                    <div class="col-4">
+                        <label for="deleteFlights"  class="form-label">Flight Number</label>
+                        <input class="form-control" type="text" id="deleteFlights" name="flightID">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="deleteFlight()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function offerFlight() {
     document.getElementById('offerFlightForm').submit();
 }
+function updateFlight() {
+    document.getElementById('updateFlightForm').submit();
+}
+
+function deleteFlight() {
+    document.getElementById('deleteFlightForm').submit();
+}
+
 </script>
 {% endblock %}

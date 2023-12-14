@@ -9,6 +9,12 @@
             <div class="col-auto">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAirplane">Add Airplane</button>
             </div>
+             <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateAirplane">Update Airplane</button>
+            </div>
+             <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteAirplane">Delete Airplane</button>
+            </div>
         </div>
     </div>
     <div class="container">
@@ -105,6 +111,109 @@
     </div>
 </div>
 
+<div class="modal" id="updateAirplane" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateAirplaneLabel">Update Airplane</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="updateAirplaneForm" action="/updateairplaneReq" method="get">
+                     <div class="col-4">
+                        <label for="updateAirline" class="form-label">Airline</label>
+                        <select class="form-select" id="updateAirline" value="" name="airlineID">
+                            <option hidden disabled selected value></option>
+                            {% for airline in airlines %}
+                            <option value="{{ airline['airlineID'] }}">{{ airline['airlineID'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="updateTailNum"  class="form-label">Tail Number</label>
+                        <input class="form-control" type="text" id="updateTailNum" name="tail_num">
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label" for="updateLocationID">Location ID</label>
+                        <input class="form-control" type="text" id="updateLocationID" name="locationID">
+                    </div>
+                    <div class="col-6">
+                        <label for="updateSeatCap" class="form-label">Seat Capacity</label>
+                        <input class="form-control" type="number" id="updateSeatCap" name="seat_capacity">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label" for="updateSpeed">Speed</label>
+                        <input class="form-control" type="number" id="updateSpeed" name="speed">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="updatePlaneType">Plane Type</label>
+                        <select class="form-select" id="updatePlaneType" value="" onchange="selectType()" name="plane_type">
+                            <option hidden disabled selected value></option>
+                            <option value="prop">Propeller</option>
+                            <option value="jet">Jet</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label" for="updatePropellers">Propellers</label>
+                        <input class="form-control" type="number" id="updatePropellers" disabled name="propellers">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="updateSkids" disabled name="skids">
+                            <label class="form-check-label" for="updateSkids">Skids</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label" for="updateJetEngines">Jet Engines</label>
+                        <input class="form-control" type="number" id="updateJetEngines" disabled name="jet_engines">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateAirplane()">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="deleteAirplane" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAirplaneLabel">Delete Airplane</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="deleteAirplaneForm" action="/deleteairplaneReq" method="get">
+                    <div class="col-4">
+                        <label for="deleteAirline" class="form-label">Airline</label>
+                        <select class="form-select" id="deleteAirline" value="" name="airlineID">
+                            <option hidden disabled selected value></option>
+                            {% for airline in airlines %}
+                            <option value="{{ airline['airlineID'] }}">{{ airline['airlineID'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="deleteTailNum"  class="form-label">Tail Number</label>
+                        <input class="form-control" type="text" id="deleteTailNum" name="tail_num">
+                    </div>
+
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="deleteAirplane()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
 <script>
 function selectType() {
     if (document.getElementById('inputPlaneType').value == 'prop') {
@@ -120,10 +229,32 @@ function selectType() {
         document.getElementById('inputSkids').disabled = true;
         document.getElementById('inputJetEngines').disabled = false;
     }
+     if (document.getElementById('updatePlaneType').value == 'prop') {
+        document.getElementById('updateJetEngines').value = "";
+        document.getElementById('updateJetEngines').disabled = true;
+        document.getElementById('updatePropellers').disabled = false;
+        document.getElementById('updateSkids').disabled = false;
+
+    } else if (document.getElementById("updatePlaneType").value == 'jet') {
+        document.getElementById('updatePropellers').value = "";
+        document.getElementById('updateSkids').value = "";
+        document.getElementById('updatePropellers').disabled = true;
+        document.getElementById('updateSkids').disabled = true;
+        document.getElementById('updateJetEngines').disabled = false;
+    }
 }
+
+function updateAirplane() {
+    document.getElementById('updateAirplaneForm').submit();
+}
+
 
 function addAirplane() {
     document.getElementById('addAirplaneForm').submit();
+}
+
+function deleteAirplane() {
+    document.getElementById('deleteAirplaneForm').submit();
 }
 </script>
 {% endblock %}
