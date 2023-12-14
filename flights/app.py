@@ -82,7 +82,67 @@ def add_airplane():
         return render_template("flights.html", success=f'Can\'t complete: {e}')
     except Exception as e:
         return render_template("flights.html", success=f'Error: {e}')
-    
+
+@app.route('/updateairplaneReq', methods=['GET', 'POST'])
+def update_airplane():
+        # Extract data from the request
+        airlineID = request.args.get('airlineID')
+        tail_num = request.args.get('tail_num')
+        seat_capacity = request.args.get('seat_capacity')
+        speed = request.args.get('speed')
+        locationID = request.args.get('locationID')
+        plane_type = request.args.get('plane_type')
+        skids = request.args.get('skids')
+        # Add other fields as needed for updating
+
+        try:
+            cursor = connection.cursor()
+            # Check if the airplane exists
+            cursor.execute("SELECT * FROM airplane WHERE airlineID = %s and tail_num = %s", (airlineID, tail_num))
+            if not cursor.fetchone():
+                return render_template("airplanes.html", success='Airplane not found.')
+
+            # Update the airplane's information
+            update_sql = ("UPDATE airplane SET locationID = %s, seat_capacity = %s, speed = %s, plane_type = %s WHERE tail_num = %s and airlineID = %s")
+            cursor.execute(update_sql, (locationID, seat_capacity, speed, plane_type, tail_num, airlineID))
+            connection.commit()
+            cursor.close()
+            return redirect("/airplanes")
+
+        except MySQLError as e:
+            return render_template("airplanes.html", success=f'Can\'t complete: {e}')
+        except Exception as e:
+            return render_template("airplanes.html", success=f'Error: {e}')
+
+
+@app.route('/deleteairplaneReq', methods=['GET', 'POST'])
+def delete_airplane():
+        # Extract data from the request
+        airlineID = request.args.get('airlineID')
+        tail_num = request.args.get('tail_num')
+
+        # Add other fields as needed for updating
+
+        try:
+            cursor = connection.cursor()
+            # Check if the airplane exists
+            cursor.execute("SELECT * FROM airplane WHERE airlineID = %s and tail_num = %s", (airlineID, tail_num))
+            if not cursor.fetchone():
+                return render_template("airplanes.html", success='Airplane not found.')
+
+            # Update the airplane's information
+            delete_sql = "DELETE FROM airplane WHERE airlineID = %s and tail_num = %s"
+            cursor.execute(delete_sql, (airlineID, tail_num))
+            connection.commit()
+            cursor.close()
+            return redirect("/airplanes")
+
+        except MySQLError as e:
+            return render_template("airplanes.html", success=f'Can\'t complete: {e}')
+        except Exception as e:
+            return render_template("airplanes.html", success=f'Error: {e}')
+
+
 @app.route('/airports')
 def airports():
     try:
@@ -132,6 +192,68 @@ def add_airport():
     except Exception as e:
         return render_template("airports.html", success=f'Error: {e}')
 
+
+@app.route('/updateAirportReq', methods=['GET', 'POST'])
+def update_airport():
+    airportID = request.args.get('airportID', '').strip()
+    airport_name = request.args.get('airport_name', '').strip()
+    city = request.args.get('city', '').strip()
+    state = request.args.get('state', '').strip()
+    country = request.args.get('country', '').strip()
+    locationID = request.args.get('locationID', '').strip()
+
+    # Check for required fields
+    if not (airportID and airport_name and city and state and country):
+        return render_template("airports.html", success='All fields are required.')
+
+    try:
+        with connection.cursor() as cursor:
+            # Check if the airportID exists to update
+            cursor.execute("SELECT * FROM airport WHERE airportID = %s", (airportID,))
+            if not cursor.fetchone():
+                return render_template("airports.html", success='Airport not found.')
+
+            # Update airport information
+            update_sql = "UPDATE airport SET airport_name = %s, city = %s, state = %s, country = %s, locationID = %s WHERE airportID = %s"
+            cursor.execute(update_sql, (airport_name, city, state, country, locationID, airportID))
+            connection.commit()
+
+        return redirect("/airports")
+
+    except MySQLError as e:
+        return render_template("airports.html", success=f'Can\'t complete: {e}')
+    except Exception as e:
+        return render_template("airports.html", success=f'Error: {e}')
+
+@app.route('/deleteAirportReq', methods=['GET', 'POST'])
+def delete_airport():
+    airportID = request.args.get('airportID', '').strip()
+
+    # Check if the airportID is provided
+    if not airportID:
+        return render_template("airports.html", success='Airport ID is required.')
+
+    try:
+        with connection.cursor() as cursor:
+            # Check if the airportID exists
+            cursor.execute("SELECT * FROM airport WHERE airportID = %s", (airportID,))
+            if not cursor.fetchone():
+                return render_template("airports.html", success='Airport not found.')
+
+            # Delete the airport
+            delete_sql = "DELETE FROM airport WHERE airportID = %s"
+            cursor.execute(delete_sql, (airportID,))
+            connection.commit()
+
+        return redirect("/airports")
+
+    except MySQLError as e:
+        return render_template("airports.html", success=f'Can\'t complete: {e}')
+    except Exception as e:
+        return render_template("airports.html", success=f'Error: {e}')
+
+
+
 # app.run() # if this is the main module
 
 
@@ -178,10 +300,16 @@ def add_persons():
     if request.args.get('passengerRole') == True:
         miles = int(miles)
         funds = int(funds)
+    else:
+        tax_ID= None
+        experience = 0
 
     if request.args.get('pilotRole') == True:
         tax_ID = tax_ID.strip()
         experience = int(experience)
+    else:
+        miles = 0
+        funds = 0
     
 
     try:
@@ -199,6 +327,82 @@ def add_persons():
         return render_template("people.html", success=f'Can\'t complete: {e}')
     except Exception as e:
         return render_template("people.html", success=f'Error: {e}')
+
+@app.route('/updatePersonReq', methods=['GET', 'POST'])
+def update_person():
+    personID = request.args.get('personID')
+    first_name = request.args.get('first_name')
+    last_name = request.args.get('last_name')
+    locationID = request.args.get('locationID')
+    tax_ID = request.args.get('tax_ID')
+    experience = request.args.get('experience')
+    miles = request.args.get('miles')
+    funds = request.args.get('funds')
+
+    if not (personID and first_name and last_name and locationID):
+        return render_template("people.html", success='All fields are required.')
+
+    try:
+        with connection.cursor() as cursor:
+            # Check if the person exists
+            cursor.execute("SELECT * FROM person WHERE personID = %s", (personID,))
+            if cursor.fetchone():
+                # return render_template("people.html", success='Person not found.')
+
+                 # Convert string values to their appropriate types
+                # if tax_ID is not None:
+                    # tax_ID = tax_ID.strip()
+                # if experience is not None:
+                    # experience = int(experience)
+                # if miles is not None:
+                    # miles = int(miles)
+                # if funds is not None:
+                    # funds = int(funds)
+
+                if request.args.get('passengerRole') == True:
+                    miles = int(miles)
+                    funds = int(funds)
+                else:
+                    tax_ID = None
+                    experience = 0
+
+                if request.args.get('pilotRole') == True:
+                    tax_ID = tax_ID.strip()
+                    experience = int(experience)
+                else:
+                    miles = 0
+                    funds = 0
+
+            # Call a stored procedure to update the person's details
+                args = [personID, first_name, last_name, locationID, tax_ID, experience, miles, funds]
+                cursor.callproc('update_person', args)
+                connection.commit()
+                return redirect("/people")
+
+    except MySQLError as e:
+        return render_template("people.html", success=f'Can\'t complete: {e}')
+    except Exception as e:
+        return render_template("people.html", success=f'Error: {e}')
+
+@app.route('/deletePersonReq', methods=['GET', 'POST'])
+def delete_person():
+    personID = request.args.get('personID')
+    if not personID:
+        return render_template("people.html", success='Person ID is required.')
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM person WHERE personID = %s", (personID,))
+            if not cursor.fetchone():
+                return render_template("people.html", success='Person not found.')
+
+            cursor.execute("DELETE FROM person WHERE personID = %s", (personID,))
+            connection.commit()
+            return redirect("/people")
+    except MySQLError as e:
+        return render_template("people.html", success=f'Can\'t complete: {e}')
+    except Exception as e:
+        return render_template("people.html", success=f'Error: {e}')
+
 
 
 @app.route('/pilots')
@@ -317,6 +521,76 @@ def add_flights():
         return render_template("flights.html", success=f'Can\'t complete: {e}')
     except Exception as e:
         return render_template("flights.html", success=f'Error: {e}')
+
+
+@app.route('/updateFlightReq', methods=['GET', 'POST'])
+def update_flight():
+    flightID = request.args.get('flightID')
+    routeID = request.args.get('routeID')
+    support_airline = request.args.get('support_airline')
+    support_tail = request.args.get('support_tail')
+    progress = request.args.get('progress')
+    next_time = request.args.get('next_time')
+    cost = request.args.get('cost')
+    try:
+        # Convert progress and cost to integers if not None
+        progress = int(progress.strip()) if progress is not None else None
+        cost = int(cost.strip()) if cost is not None else None
+    except ValueError:
+        return render_template("flights.html", success='Invalid input given.')
+    # Check if all required fields are provided
+    if not all([flightID, routeID, support_airline, support_tail, progress, next_time, cost]):
+        return render_template("flights.html", success='All fields are required.')
+    try:
+        with connection.cursor() as cursor:
+            # Check if the flightID exists
+            cursor.execute("SELECT * FROM flight WHERE flightID = %s", (flightID,))
+            if not cursor.fetchone():
+                return render_template("flights.html", success='Flight not found.')
+            # Update the flight record
+            update_sql = """
+                UPDATE flight 
+                SET routeID = %s, support_airline = %s, support_tail = %s, progress = %s, next_time = %s, cost = %s 
+                WHERE flightID = %s
+            """
+            args = [routeID, support_airline, support_tail, progress, next_time, cost, flightID]
+            cursor.execute(update_sql, args)
+            connection.commit()
+
+        return redirect('/flights')
+
+    except MySQLError as e:
+        return render_template("flights.html", success=f'Can\'t complete: {e}')
+    except Exception as e:
+        return render_template("flights.html", success=f'Error: {e}')
+
+@app.route('/deleteFlightReq', methods=['GET', 'POST'])
+def delete_flight():
+    flightID = request.args.get('flightID')
+    if not flightID:
+        return render_template("flights.html", success='Flight ID is required.')
+    try:
+        with connection.cursor() as cursor:
+            # Check if the flightID exists
+            cursor.execute("SELECT * FROM flight WHERE flightID = %s", (flightID,))
+            if not cursor.fetchone():
+                return render_template("flights.html", success='Flight not found.')
+
+            # Delete the flight record
+            delete_sql = "DELETE FROM flight WHERE flightID = %s"
+            cursor.execute(delete_sql, (flightID,))
+            connection.commit()
+
+        return redirect('/flights')
+
+    except MySQLError as e:
+        return render_template("flights.html", success=f'Can\'t complete: {e}')
+    except Exception as e:
+        return render_template("flights.html", success=f'Error: {e}')
+
+
+
+
 @app.route('/flights/<flightID>')
 def flight(flightID):
     try:
@@ -481,3 +755,7 @@ def simulation_cycle():
             return redirect(f'/views')
     except Exception as e:
         return redirect(f'/views')
+
+
+if __name__ == '__main__':
+    app.run()
