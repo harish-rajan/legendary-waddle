@@ -262,16 +262,17 @@ def people():
     try:
         with connection.cursor() as cursor:
             sql = "select t1.personID, t1.first_name, t1.last_name, case " \
-                    "when t1.personID in (select personID from passenger) then 'passenger' " \
-                    "when t1.personID in (select personID from pilot) then 'pilot' else null " \
-                "end as role, t1.locationID, case " \
-                    "when t2.airportID is not null then concat(t2.airport_name, ' (', t2.airportID, ')') " \
-                    "when t3.tail_num is not null then concat(t3.airlineID, ' flight ', regexp_substr(t4.flightID,'[0-9]+')) " \
-                    "else null end as location_name " \
-            "from person t1 left join airport t2 on t1.locationID = t2.locationID " \
-                "left join airplane t3 on t1.locationID = t3.locationID " \
-                "left join flight t4 on t3.airlineID = t4.support_airline and t3.tail_num = t4.support_tail " \
-            "order by convert(right(t1.personID, length(t1.personID) - 1), decimal)"
+                  "when t1.role != '0' then t1.role " \
+                  "when t1.personID in (select personID from passenger) then 'passenger' " \
+                  "when t1.personID in (select personID from pilot) then 'pilot' else null " \
+                  "end as role, t1.locationID, case " \
+                  "when t2.airportID is not null then concat(t2.airport_name, ' (', t2.airportID, ')') " \
+                  "when t3.tail_num is not null then concat(t3.airlineID, ' flight ', regexp_substr(t4.flightID,'[0-9]+')) " \
+                  "else null end as location_name " \
+                  "from person t1 left join airport t2 on t1.locationID = t2.locationID " \
+                  "left join airplane t3 on t1.locationID = t3.locationID " \
+                  "left join flight t4 on t3.airlineID = t4.support_airline and t3.tail_num = t4.support_tail " \
+                  "order by convert(right(t1.personID, length(t1.personID) - 1), decimal)"
 
             cols = ['personID', 'first_name', 'last_name', 'role', 'locationID', 'location_name']
             cursor.execute(sql)
@@ -284,7 +285,8 @@ def people():
             return render_template("people.html", items=items, cols=cols, locations=locations, success='')
     except Exception as e:
         return render_template("people.html", items=[], cols=[], success='Error: ' + str(e))
-    
+
+
 @app.route('/addPersonReq', methods=['GET'])
 def add_persons():
     personID = request.args.get('personID')
@@ -295,13 +297,14 @@ def add_persons():
     experience = request.args.get('experience')
     miles = request.args.get('miles')
     funds = request.args.get('funds')
-    if not(personID and first_name and last_name and locationID):
+
+    if not (personID and first_name and last_name and locationID):
         return render_template("people.html", success='All fields are required.')
     if request.args.get('passengerRole') == True:
         miles = int(miles)
         funds = int(funds)
     else:
-        tax_ID= None
+        tax_ID = None
         experience = 0
 
     if request.args.get('pilotRole') == True:
@@ -310,7 +313,16 @@ def add_persons():
     else:
         miles = 0
         funds = 0
-    
+
+    if request.args.get('passengerRole') == 'on':
+        role = 'passenger'
+    else:
+        role = 'pilot'
+
+    if request.args.get('pilotRole') == 'on':
+        role = 'pilot'
+    else:
+        role = 'passenger'
 
     try:
         with connection.cursor() as cursor:
@@ -318,7 +330,7 @@ def add_persons():
             if cursor.fetchone():
                 return render_template("people.html", success='Duplicate entry.')
             args = (personID, first_name, last_name, locationID, tax_ID,
-                    experience, miles, funds)
+                    experience, miles, funds, role)
             cursor.callproc('add_person', args)
             connection.commit()
             return redirect("/people")
@@ -327,6 +339,7 @@ def add_persons():
         return render_template("people.html", success=f'Can\'t complete: {e}')
     except Exception as e:
         return render_template("people.html", success=f'Error: {e}')
+
 
 @app.route('/updatePersonReq', methods=['GET', 'POST'])
 def update_person():
@@ -349,15 +362,15 @@ def update_person():
             if cursor.fetchone():
                 # return render_template("people.html", success='Person not found.')
 
-                 # Convert string values to their appropriate types
+                # Convert string values to their appropriate types
                 # if tax_ID is not None:
-                    # tax_ID = tax_ID.strip()
+                # tax_ID = tax_ID.strip()
                 # if experience is not None:
-                    # experience = int(experience)
+                # experience = int(experience)
                 # if miles is not None:
-                    # miles = int(miles)
+                # miles = int(miles)
                 # if funds is not None:
-                    # funds = int(funds)
+                # funds = int(funds)
 
                 if request.args.get('passengerRole') == True:
                     miles = int(miles)
@@ -373,8 +386,13 @@ def update_person():
                     miles = 0
                     funds = 0
 
-            # Call a stored procedure to update the person's details
-                args = [personID, first_name, last_name, locationID, tax_ID, experience, miles, funds]
+                if request.args.get('passengerRole') == 'on':
+                    role = 'passenger'
+                else:
+                    role = 'pilot'
+
+                # Call a stored procedure to update the person's details
+                args = [personID, first_name, last_name, locationID, tax_ID, experience, miles, funds, role]
                 cursor.callproc('update_person', args)
                 connection.commit()
                 return redirect("/people")

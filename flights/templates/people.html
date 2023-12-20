@@ -77,11 +77,11 @@
                     </div>
                     <div class="col-12" onclick="selectRole()">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="personRole" id="passenger" name="passengerRole">
+                            <input class="form-check-input" type="radio" name="passengerRole" id="passenger" name="passengerRole">
                             <label class="form-check-label" for="passenger">Passenger</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="personRole" id="pilot" name="pilotRole">
+                            <input class="form-check-input" type="radio" name="pilotRole" id="pilot" name="pilotRole">
                             <label class="form-check-label" for="pilot">Pilot</label>
                         </div>
                     </div>
@@ -145,13 +145,13 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-12" onclick="selectRole()">
+                    <div class="col-12" onclick="updateRole()">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="personRole" id="updatepassenger" name="passengerRole">
+                            <input class="form-check-input" type="radio"  id="updatepassenger" name="passengerRole">
                             <label class="form-check-label" for="passenger">Passenger</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="personRole" id="updatepilot" name="pilotRole">
+                            <input class="form-check-input" type="radio"  id="updatepilot" name="pilotRole">
                             <label class="form-check-label" for="pilot">Pilot</label>
                         </div>
                     </div>
@@ -223,6 +223,21 @@ function selectRole() {
         document.getElementById("inputExperience").value = "";
         document.getElementById("pilotInfo").hidden = true;
         document.getElementById("passengerInfo").hidden = false;
+    }
+}
+
+function updateRole() {
+    if (document.getElementById("updatepilot").checked) {
+        document.getElementById("updateMiles").value = "";
+        document.getElementById("updateFunds").value = "";
+        document.getElementById("updatepassengerInfo").hidden = true;
+        document.getElementById("updatepilotInfo").hidden = false;
+    }
+    if (document.getElementById("updatepassenger").checked) {
+        document.getElementById("updateTaxID").value = "";
+        document.getElementById("updateExperience").value = "";
+        document.getElementById("updatepilotInfo").hidden = true;
+        document.getElementById("updatepassengerInfo").hidden = false;
     }
 }
 
